@@ -3,6 +3,7 @@ package com.fastcampus.programming.dmaker.dto;
 import com.fastcampus.programming.dmaker.entity.DeveloperEntity;
 import com.fastcampus.programming.dmaker.type.DeveloperLevel;
 import com.fastcampus.programming.dmaker.type.DeveloperSkillType;
+import com.fastcampus.programming.dmaker.type.StatusCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -23,6 +24,8 @@ public class DeveloperDetailDto {
 
     private Integer experienceYears;
 
+    private StatusCode statusCode;
+
     private String memberId;
 
     private String name;
@@ -34,6 +37,7 @@ public class DeveloperDetailDto {
                 .developerLevel(developerEntity.getDeveloperLevel())
                 .developerSkillType(developerEntity.getDeveloperSkillType())
                 .experienceYears(developerEntity.getExperienceYears())
+                .statusCode(developerEntity.getStatusCode())
                 .memberId(developerEntity.getMemberId())
                 .name(developerEntity.getName())
                 .age(developerEntity.getAge())

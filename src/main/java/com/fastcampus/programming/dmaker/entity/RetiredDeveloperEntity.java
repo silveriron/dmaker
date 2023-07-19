@@ -18,31 +18,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-@Table(name = "developer")
-public class DeveloperEntity {
+@Table(name = "retired_developer")
+public class RetiredDeveloperEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Enumerated(EnumType.STRING)
-    private DeveloperLevel developerLevel;
-
-    @Enumerated(EnumType.STRING)
-    private DeveloperSkillType developerSkillType;
-
-    @Enumerated(EnumType.STRING)
-    private StatusCode statusCode;
-
-    private Integer experienceYears;
     private String memberId;
     private String name;
     private Integer age;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
-
 }
