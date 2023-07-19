@@ -1,14 +1,12 @@
 package com.fastcampus.programming.dmaker.controller;
 
 import com.fastcampus.programming.dmaker.dto.CreateDeveloper;
+import com.fastcampus.programming.dmaker.dto.DeveloperDetailDto;
 import com.fastcampus.programming.dmaker.dto.DeveloperDto;
 import com.fastcampus.programming.dmaker.service.DeveloperService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +27,11 @@ public class DmakerController {
         return developerService.createDeveloper(request);
     }
 
-
+    @GetMapping("/developer/{memberId}")
+    public DeveloperDetailDto getDeveloperById(
+            @PathVariable String memberId
+    ) {
+        return developerService.getDeveloperById(memberId);
+    }
 
 }

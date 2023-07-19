@@ -1,6 +1,7 @@
 package com.fastcampus.programming.dmaker.service;
 
 import com.fastcampus.programming.dmaker.dto.CreateDeveloper;
+import com.fastcampus.programming.dmaker.dto.DeveloperDetailDto;
 import com.fastcampus.programming.dmaker.dto.DeveloperDto;
 import com.fastcampus.programming.dmaker.entity.DeveloperEntity;
 import com.fastcampus.programming.dmaker.exception.DMakerErrorCode;
@@ -64,9 +65,11 @@ public class DeveloperService {
 
         List<DeveloperEntity> developerEntityList = developerRepository.findAll();
 
-        return developerEntityList.stream().map(developerEntity -> {
-            return DeveloperDto.fromEntity(developerEntity);
-        }).collect(Collectors.toList());
+        return developerEntityList.stream().map(DeveloperDto::fromEntity).collect(Collectors.toList());
 
+    }
+
+    public DeveloperDetailDto getDeveloperById(String memberId) {
+        return developerRepository.findByMemberId(memberId).map(DeveloperDetailDto::fromEntity).orElseThrow(() -> new DMakerException(DMakerErrorCode.NO_DEVELOPER));
     }
 }
