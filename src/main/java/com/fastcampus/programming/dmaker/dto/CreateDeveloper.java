@@ -1,4 +1,4 @@
-package com.fastcampus.programming.dmaker.Dto;
+package com.fastcampus.programming.dmaker.dto;
 
 import com.fastcampus.programming.dmaker.entity.DeveloperEntity;
 import com.fastcampus.programming.dmaker.type.DeveloperLevel;
