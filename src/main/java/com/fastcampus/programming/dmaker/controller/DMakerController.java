@@ -26,7 +26,7 @@ public class DMakerController {
 
     @PostMapping("/create-developer")
     public CreateDeveloper.Response createDevelopers(
-            @RequestBody @Valid CreateDeveloper.Request request
+            @RequestBody @Valid final CreateDeveloper.Request request
     ) {
         return developerService.createDeveloper(request);
     }

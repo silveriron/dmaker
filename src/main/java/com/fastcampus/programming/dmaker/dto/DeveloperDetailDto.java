@@ -32,15 +32,5 @@ public class DeveloperDetailDto {
 
     private Integer age;
 
-    public static DeveloperDetailDto fromEntity(DeveloperEntity developerEntity) {
-        return DeveloperDetailDto.builder()
-                .developerLevel(developerEntity.getDeveloperLevel())
-                .developerSkillType(developerEntity.getDeveloperSkillType())
-                .experienceYears(developerEntity.getExperienceYears())
-                .statusCode(developerEntity.getStatusCode())
-                .memberId(developerEntity.getMemberId())
-                .name(developerEntity.getName())
-                .age(developerEntity.getAge())
-                .build();
-    }
+
 }

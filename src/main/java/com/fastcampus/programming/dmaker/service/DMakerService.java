@@ -1,5 +1,6 @@
 package com.fastcampus.programming.dmaker.service;
 
+import com.fastcampus.programming.dmaker.converter.DMakerConverter;
 import com.fastcampus.programming.dmaker.dto.CreateDeveloper;
 import com.fastcampus.programming.dmaker.dto.DeveloperDetailDto;
 import com.fastcampus.programming.dmaker.dto.DeveloperDto;
@@ -27,50 +28,28 @@ public class DMakerService {
 
     private final RetiredDeveloperRepository retiredDeveloperRepository;
 
+    private final DMakerConverter dMakerConverter;
+
     @Transactional
     public CreateDeveloper.Response createDeveloper(CreateDeveloper.Request request) {
 
         validateCreateDeveloperRequest(request);
 
-
-        DeveloperEntity developer = DeveloperEntity.builder()
-                .developerLevel(request.getDeveloperLevel())
-                .developerSkillType(request.getDeveloperSkillType())
-                .experienceYears(request.getExperienceYears())
-                .memberId(request.getMemberId())
-                .statusCode(StatusCode.EMPLOYED)
-                .name(request.getName())
-                .age(request.getAge())
-                .build();
-
-        developerRepository.save(developer);
-
-        return CreateDeveloper.Response.fromEntity(developer);
+        return CreateDeveloper.Response.fromEntity(
+                developerRepository.save(
+                        dMakerConverter.toEntity(request)
+                )
+        );
     }
 
     private void validateCreateDeveloperRequest(CreateDeveloper.Request request) {
-        validateDeveloperRequest(request.getDeveloperLevel(), request.getExperienceYears());
+
+        request.getDeveloperLevel().validateExperienceYear(request.getExperienceYears());
 
         developerRepository.findByMemberId(request.getMemberId())
                 .ifPresent(developer -> {
                     throw new DMakerException(DMakerErrorCode.DUPLICATED_MEMBER_ID);
                 });
-    }
-
-    private static void validateDeveloperRequest(DeveloperLevel developerLevel, Integer experienceYears) {
-        if (developerLevel == DeveloperLevel.SENIOR
-        && experienceYears < 10) {
-            throw new DMakerException(DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
-
-        if(developerLevel == DeveloperLevel.JUNGNIOR
-        && (experienceYears < 4 || experienceYears >10)) {
-            throw new DMakerException(DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
-        if(developerLevel == DeveloperLevel.JUNIOR
-        && experienceYears > 4) {
-            throw new DMakerException(DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
-        }
     }
 
     public List<DeveloperDto> getAllEmployedDevelopers() {
@@ -82,11 +61,11 @@ public class DMakerService {
     }
 
     public DeveloperDetailDto getDeveloperById(String memberId) {
-        return developerRepository.findByMemberId(memberId).map(DeveloperDetailDto::fromEntity).orElseThrow(() -> new DMakerException(DMakerErrorCode.NO_DEVELOPER));
+        return developerRepository.findByMemberId(memberId).map((dMakerConverter::toDeveloperDetailDto)).orElseThrow(() -> new DMakerException(DMakerErrorCode.NO_DEVELOPER));
     }
 
     public DeveloperDetailDto editDeveloper(String memberId, EditDeveloper.Request request) {
-        validateDeveloperRequest(request.getDeveloperLevel(), request.getExperienceYears());
+        request.getDeveloperLevel().validateExperienceYear(request.getExperienceYears());
 
         DeveloperEntity developerEntity = developerRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new DMakerException(DMakerErrorCode.NO_DEVELOPER));
@@ -95,7 +74,7 @@ public class DMakerService {
         developerEntity.setDeveloperSkillType(request.getDeveloperSkillType());
         developerEntity.setExperienceYears(request.getExperienceYears());
 
-        return DeveloperDetailDto.fromEntity(developerRepository.save(developerEntity));
+        return dMakerConverter.toDeveloperDetailDto(developerRepository.save(developerEntity));
     }
 
     @Transactional
@@ -113,6 +92,6 @@ public class DMakerService {
 
         retiredDeveloperRepository.save(retiredDeveloperEntity);
 
-        return DeveloperDetailDto.fromEntity(developerEntity);
+        return dMakerConverter.toDeveloperDetailDto(developerEntity);
     }
 }
