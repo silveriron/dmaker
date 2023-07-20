@@ -21,36 +21,19 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class DeveloperService {
+public class DMakerService {
 
     private final DeveloperRepository developerRepository;
 
     private final RetiredDeveloperRepository retiredDeveloperRepository;
 
     @Transactional
-    public DeveloperDetailDto deleteDeveloper(String memberId) {
-
-        DeveloperEntity developerEntity = developerRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new DMakerException(DMakerErrorCode.NO_DEVELOPER));
-        developerEntity.setStatusCode(StatusCode.RETIRED);
-
-        RetiredDeveloperEntity retiredDeveloperEntity = RetiredDeveloperEntity.builder()
-                .memberId(memberId)
-                .name(developerEntity.getName())
-                .age(developerEntity.getAge())
-                .build();
-
-        retiredDeveloperRepository.save(retiredDeveloperEntity);
-
-        return DeveloperDetailDto.fromEntity(developerEntity);
-    }
-
-    @Transactional
     public CreateDeveloper.Response createDeveloper(CreateDeveloper.Request request) {
 
         validateCreateDeveloperRequest(request);
 
-        DeveloperEntity developerEntity = developerRepository.save(DeveloperEntity.builder()
+
+        DeveloperEntity developer = DeveloperEntity.builder()
                 .developerLevel(request.getDeveloperLevel())
                 .developerSkillType(request.getDeveloperSkillType())
                 .experienceYears(request.getExperienceYears())
@@ -58,13 +41,15 @@ public class DeveloperService {
                 .statusCode(StatusCode.EMPLOYED)
                 .name(request.getName())
                 .age(request.getAge())
-                .build());
+                .build();
 
-        return CreateDeveloper.Response.fromEntity(developerEntity);
+        developerRepository.save(developer);
+
+        return CreateDeveloper.Response.fromEntity(developer);
     }
 
     private void validateCreateDeveloperRequest(CreateDeveloper.Request request) {
-        validate(request.getDeveloperLevel(), request.getExperienceYears());
+        validateDeveloperRequest(request.getDeveloperLevel(), request.getExperienceYears());
 
         developerRepository.findByMemberId(request.getMemberId())
                 .ifPresent(developer -> {
@@ -72,7 +57,7 @@ public class DeveloperService {
                 });
     }
 
-    private static void validate(DeveloperLevel developerLevel, Integer experienceYears) {
+    private static void validateDeveloperRequest(DeveloperLevel developerLevel, Integer experienceYears) {
         if (developerLevel == DeveloperLevel.SENIOR
         && experienceYears < 10) {
             throw new DMakerException(DMakerErrorCode.LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
@@ -101,7 +86,7 @@ public class DeveloperService {
     }
 
     public DeveloperDetailDto editDeveloper(String memberId, EditDeveloper.Request request) {
-        validate(request.getDeveloperLevel(), request.getExperienceYears());
+        validateDeveloperRequest(request.getDeveloperLevel(), request.getExperienceYears());
 
         DeveloperEntity developerEntity = developerRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new DMakerException(DMakerErrorCode.NO_DEVELOPER));
@@ -111,5 +96,23 @@ public class DeveloperService {
         developerEntity.setExperienceYears(request.getExperienceYears());
 
         return DeveloperDetailDto.fromEntity(developerRepository.save(developerEntity));
+    }
+
+    @Transactional
+    public DeveloperDetailDto deleteDeveloper(String memberId) {
+
+        DeveloperEntity developerEntity = developerRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new DMakerException(DMakerErrorCode.NO_DEVELOPER));
+        developerEntity.setStatusCode(StatusCode.RETIRED);
+
+        RetiredDeveloperEntity retiredDeveloperEntity = RetiredDeveloperEntity.builder()
+                .memberId(memberId)
+                .name(developerEntity.getName())
+                .age(developerEntity.getAge())
+                .build();
+
+        retiredDeveloperRepository.save(retiredDeveloperEntity);
+
+        return DeveloperDetailDto.fromEntity(developerEntity);
     }
 }

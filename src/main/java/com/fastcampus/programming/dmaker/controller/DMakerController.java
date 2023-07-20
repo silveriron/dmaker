@@ -4,10 +4,7 @@ import com.fastcampus.programming.dmaker.dto.CreateDeveloper;
 import com.fastcampus.programming.dmaker.dto.DeveloperDetailDto;
 import com.fastcampus.programming.dmaker.dto.DeveloperDto;
 import com.fastcampus.programming.dmaker.dto.EditDeveloper;
-import com.fastcampus.programming.dmaker.dto.DMakerErrorResponse;
-import com.fastcampus.programming.dmaker.exception.DMakerException;
-import com.fastcampus.programming.dmaker.service.DeveloperService;
-import jakarta.servlet.http.HttpServletRequest;
+import com.fastcampus.programming.dmaker.service.DMakerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +15,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class DmakerController {
+public class DMakerController {
 
-    private final DeveloperService developerService;
+    private final DMakerService developerService;
 
     @GetMapping("/developers")
     public List<DeveloperDto> getAllEmployedDevelopers() {
